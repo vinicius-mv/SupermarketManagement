@@ -15,8 +15,9 @@ builder.Services.AddSingleton<WeatherForecastService>();
 // Dependency Injection for In-Memory Data Store
 builder.Services.AddScoped<ICategoryRepository, CategoryInMemoryRepository>();
 
-// Dependency Injection for Use Cases
-builder.Services.AddScoped<IViewCategoriesUseCases, ViewCategoriesUseCases>();
+// Dependency Injection for Use Cases and Repositories
+builder.Services.AddTransient<IViewCategoriesUseCase, ViewCategoriesUseCase>();
+builder.Services.AddTransient<IAddCategoryUseCase, AddCategoryUseCase>();
 
 var app = builder.Build();
 

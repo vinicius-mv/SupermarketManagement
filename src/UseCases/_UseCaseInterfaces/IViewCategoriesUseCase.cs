@@ -2,7 +2,7 @@
 
 namespace UseCases
 {
-    public interface IViewCategoriesUseCases
+    public interface IViewCategoriesUseCase
     {
         IEnumerable<Category> Execute();
     }
