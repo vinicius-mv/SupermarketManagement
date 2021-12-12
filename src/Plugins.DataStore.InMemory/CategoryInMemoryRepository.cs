@@ -33,5 +33,21 @@ namespace Plugins.DataStore.InMemory
         {
             return _categories;
         }
+
+        public Category GetCategoryById(int categoryId)
+        {
+            return _categories?.FirstOrDefault(x => x.CategoryId == categoryId);
+        }
+
+        public void UpdateCategory(Category category)
+        {
+            var categoryToUpdate = GetCategoryById(category.CategoryId);
+
+            if (categoryToUpdate != null)
+            {
+                categoryToUpdate.Name = category.Name;
+                categoryToUpdate.Description = category.Description;
+            }
+        }
     }
 }

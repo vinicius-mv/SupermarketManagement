@@ -12,6 +12,7 @@
             <tr>
                 <th>Name</th>
                 <th>Description</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -20,6 +21,7 @@
             <tr>
                 <td>@category.Name</td>
                 <td>@category.Description</td>
+                <td><button type="button" @onclick="@(() => HandleEditCategory(category))" class="btn btn-link">Edit</button></td>
             </tr>
         }
         </tbody>
@@ -27,7 +29,7 @@
 }
 
 <br />
-<button type="button" @onclick="OnClickAddCategory" class="btn btn-primary">Add Category</button>
+<button type="button" @onclick="HandleAddCategory" class="btn btn-primary">Add Category</button>
 
 @code {
     private IEnumerable<Category> categories;
@@ -39,8 +41,13 @@
         categories = ViewCategoriesUseCases.Execute()?.ToList();
     }
 
-    private void OnClickAddCategory()
+    private void HandleAddCategory()
     {
         NavigationManager.NavigateTo("/addcategory");
+    }
+
+    private void HandleEditCategory(Category category)
+    {
+        NavigationManager.NavigateTo($"/editcategory/{category.CategoryId}");
     }
 }
