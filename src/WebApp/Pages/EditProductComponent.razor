@@ -1,0 +1,84 @@
+﻿@page "/editproduct/{productId}"
+
+@inject NavigationManager NavigationManager
+@inject IEditProductUseCase EditProductUseCase
+@inject IGetProductByIdUseCase GetProductByIdUseCase
+@inject IViewCategoriesUseCase ViewCategoriesUseCase
+
+<h3>Edit Product</h3>
+
+@if (product != null)
+{
+    <EditForm Model="product" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <InputText id="name" @bind-Value="product.Name" class="form-control"></InputText>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" @bind="product.CategoryId" class="form-control">
+                <option selected></option>
+                @foreach (var category in categories)
+                {
+                    <option value="@category.CategoryId">@category.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Price</label>
+            <InputNumber id="price" @bind-Value="product.Price" @bind-Value:format="F2" class="form-control"></InputNumber>
+        </div>
+
+        <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <InputNumber id="quantity" @bind-Value="product.Quantity" class="form-control"></InputNumber>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-primary" @onclick="OnCancel">Cancel</button>
+    </EditForm>
+}
+
+
+@code {
+    private Product product;
+    private IEnumerable<Category> categories;
+
+    [Parameter]
+    public string ProductId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        this.categories = ViewCategoriesUseCase.Execute();
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (int.TryParse(this.ProductId, out int parsedProductId))
+        {
+            var prod = GetProductByIdUseCase.Execute(parsedProductId);
+            // In-Memory database, so we need to clone before making changes to the real object
+            this.product = new Product { ProductId = prod.ProductId, Name = prod.Name, CategoryId = prod.CategoryId, Price = prod.Price, Quantity = prod.Quantity };
+        }
+    }
+
+    private void OnValidSubmit()
+    {
+        EditProductUseCase.Execute(this.product);
+        NavigationManager.NavigateTo("/products");
+    }
+
+    private void OnCancel()
+    {
+        NavigationManager.NavigateTo("/products");
+    }
+}

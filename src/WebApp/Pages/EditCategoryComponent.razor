@@ -47,7 +47,7 @@
         if (int.TryParse(this.CategoryId, out int parsedCategoryId))
         {
             var cat = GetCategoryByIdUseCase.Execute(parsedCategoryId);
-            // In-Memory database, so we need to clone before make changes to the real object
+            // In-Memory database, so we need to clone before making changes to the real object
             this.category = new Category { CategoryId = cat.CategoryId, Name = cat.Name, Description = cat.Description };
         }
     }
