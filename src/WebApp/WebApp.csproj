@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CoreBusiness\CoreBusiness.csproj" />
     <ProjectReference Include="..\Plugins.DataStore.InMemory\Plugins.DataStore.InMemory.csproj" />
     <ProjectReference Include="..\UseCases\UseCases.csproj" />
