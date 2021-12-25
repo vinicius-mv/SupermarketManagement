@@ -1,0 +1,83 @@
+﻿@page "/transactions"
+
+@inject IGetTransactionsUseCase GetTransactionsUseCase
+
+<div class="row mb-4">
+    <div class="col-4">
+        <label for="cashier">Cashier Name</label>
+        <input type="text" id="cashier" class="form-control" @bind-value="cashierName" />
+    </div>
+
+    <div class="col-3">
+        <label for="start-date">Start Date</label>
+        <input type="date" id="start-date" class="form-control" @bind-value="startDate" />
+    </div>
+
+    <div class="col-3">
+        <label for="end-date">End Date</label>
+        <input type="date" id="end-date" class="form-control" @bind-value="endDate" />
+    </div>
+
+    <div class="col-2">
+        <button type="button" class="btn btn-primary" @onclick="LoadTransaction">Search</button>
+    </div>
+</div>
+
+
+@if (transactions != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date Time</th>
+                <th>Cashier</th>
+                <th>Product Name</th>
+                <th>Qty Before</th>
+                <th>Qty Sold</th>
+                <th>Qty After</th>
+                <th>Sold Amt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tran in transactions)
+            {
+                <tr>
+                    <td>@tran.TimeStamp.ToString("yyyy-MM-dd hh:mm")</td>
+                    <td>@tran.CashierName</td>
+                    <td>@tran.ProductName</td>
+                    <td>@tran.BeforeQty</td>
+                    <td>@tran.SoldQty</td>
+                    <td>@(tran.BeforeQty -  tran.SoldQty)</td>
+                    <td class="text-right">@string.Format($"{tran.SoldQty * tran.Price:C}")</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5">&nbsp;</td>
+                <td class="text-right"><strong>Grand Total:</strong></td>
+                <td class="text-right"><strong>@transactions.Sum(x => x.Price * x.SoldQty).ToString("C")</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+}
+
+@code {
+    private string cashierName;
+    private DateTime startDate;
+    private DateTime endDate;
+    private IEnumerable<Transaction> transactions;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        startDate = DateTime.Now;
+        endDate = DateTime.Now;
+    }
+
+    private void LoadTransaction()
+    {
+        transactions = GetTransactionsUseCase.Execute(cashierName, startDate, endDate);
+    }
+}

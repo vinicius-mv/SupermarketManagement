@@ -21,9 +21,17 @@ namespace Plugins.DataStore.InMemory
             return _transactions;
         }
 
-        public IEnumerable<Transaction> GetByDay(string cashierName, DateTime date)
+        public IEnumerable<Transaction> GetByDay(string cashierName, DateTime refDate)
         {
-            return _transactions.Where(x => x.TimeStamp.Date == date.Date && x.CashierName == cashierName);
+            if (string.IsNullOrWhiteSpace(cashierName))
+            {
+                return _transactions.Where(x => x.TimeStamp.Date == refDate.Date);
+            }
+            else
+            {
+                return _transactions.Where(x => string.Equals(x.CashierName, cashierName, StringComparison.OrdinalIgnoreCase)
+                    && x.TimeStamp.Date == refDate.Date);
+            }
         }
 
         public void Save(string cashierName, int productId, string productName, double price, int beforeQty, int soldQty)
@@ -43,6 +51,21 @@ namespace Plugins.DataStore.InMemory
                 SoldQty = soldQty,
                 CashierName = cashierName
             });
+        }
+
+        public IEnumerable<Transaction> Search(string cashierName, DateTime startDate, DateTime endDate)
+        {
+            if (string.IsNullOrWhiteSpace(cashierName))
+            {
+                return _transactions.Where(x => x.TimeStamp.Date >= startDate.Date 
+                    && x.TimeStamp.Date <= endDate.Date);
+            }
+            else
+            {
+                return _transactions.Where(x => string.Equals(x.CashierName, cashierName, StringComparison.OrdinalIgnoreCase)
+                    && x.TimeStamp.Date >= startDate.Date
+                    && x.TimeStamp.Date <= endDate.Date);
+            }
         }
     }
 }

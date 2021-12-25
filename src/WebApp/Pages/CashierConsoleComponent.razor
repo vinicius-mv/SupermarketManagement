@@ -47,8 +47,9 @@
 
         if (firstRender)
         {
-            transactionComponent.LoadTransaction(cashierName);
+            return Task.CompletedTask;
         }
+        transactionComponent.LoadTransaction(cashierName);
     }
 
     private void SelectProduct(Product product)
