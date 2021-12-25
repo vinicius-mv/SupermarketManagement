@@ -29,7 +29,7 @@ namespace Plugins.DataStore.InMemory
 
             category.CategoryId = maxId + 1;
 
-            _categories.Add(category);
+            _categories!.Add(category);
         }
 
         public void DeleteCategory(int categoryId)
@@ -46,7 +46,7 @@ namespace Plugins.DataStore.InMemory
 
         public Category GetCategoryById(int categoryId)
         {
-            return _categories?.FirstOrDefault(x => x.CategoryId == categoryId);
+            return _categories.First(x => x.CategoryId == categoryId);
         }
 
         public void UpdateCategory(Category category)

@@ -35,7 +35,7 @@ namespace Plugins.DataStore.InMemory
 
             product.ProductId = maxId + 1;
 
-            _products.Add(product);
+            _products!.Add(product);
         }
 
         public IEnumerable<Product> GetProducts()
@@ -66,7 +66,6 @@ namespace Plugins.DataStore.InMemory
 
             if (productToDelete != null)
                 _products.Remove(productToDelete);
-
         }
 
         public IEnumerable<Product> GetProductsByCategoryId(int categoryId)
