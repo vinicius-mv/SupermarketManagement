@@ -60,5 +60,6 @@
     private void OnDeleteProduct(int productId)
     {
         DeleteProductUseCase.Execute(productId);
+        products = ViewProductsUseCase.Execute();
     }
 }

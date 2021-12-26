@@ -12,9 +12,6 @@ namespace CoreBusiness
         public int ProductId { get; set; }
 
         [Required]
-        public int? CategoryId { get; set; }
-
-        [Required]
         public string Name { get; set; }
 
         [Required]
@@ -22,5 +19,10 @@ namespace CoreBusiness
 
         [Required]
         public double? Price { get; set; }
+
+        [Required]
+        public int? CategoryId { get; set; }
+        // navigation properties ef core
+        public Category Category { get; set; }
     }
 }

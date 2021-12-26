@@ -14,6 +14,10 @@ namespace CoreBusiness
         [Required]
         public string Name { get; set; }
 
+        [Required]
         public string Description { get; set; }
+
+        // navigation properties ef core
+        public List<Product> Products { get; set; }
     }
 }

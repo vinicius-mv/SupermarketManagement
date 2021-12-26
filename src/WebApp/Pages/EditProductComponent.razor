@@ -65,9 +65,11 @@
 
         if (int.TryParse(this.ProductId, out int parsedProductId))
         {
-            var prod = GetProductByIdUseCase.Execute(parsedProductId);
             // In-Memory database, so we need to clone before making changes to the real object
-            this.product = new Product { ProductId = prod.ProductId, Name = prod.Name, CategoryId = prod.CategoryId, Price = prod.Price, Quantity = prod.Quantity };
+            //var prod = GetProductByIdUseCase.Execute(parsedProductId);
+            //this.product = new Product { ProductId = prod.ProductId, Name = prod.Name, CategoryId = prod.CategoryId, Price = prod.Price, Quantity = prod.Quantity };
+
+            this.product = GetProductByIdUseCase.Execute(parsedProductId);
         }
     }
 
