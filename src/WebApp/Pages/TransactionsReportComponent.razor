@@ -1,4 +1,5 @@
 ﻿@page "/transactions"
+@attribute [Authorize(Policy = "AdminOnly")]
 
 @inject IGetTransactionsUseCase GetTransactionsUseCase
 @inject IJSRuntime JSRuntime
@@ -113,10 +114,10 @@
         transactions = GetTransactionsUseCase.Execute(cashierName, startDate, endDate);
     }
 
-    private void PrintReport()
+    private async Task PrintReport()
     {
         printMode = true;
-        JSRuntime.InvokeVoidAsync("print");
+        await JSRuntime.InvokeVoidAsync("print");
         printMode = false;
     }
 }

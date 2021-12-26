@@ -4,6 +4,7 @@
 @inject IViewProductsUseCase ViewProductsUseCase
 @inject IGetCategoryByIdUseCase GetCategoryByIdUseCase
 @inject IDeleteProductUseCase DeleteProductUseCase
+@inject IAuthorizationService AuthorizationService
 
 <h3>Products</h3>
 
@@ -27,7 +28,7 @@
                     <td>@Math.Round(product.Price.GetValueOrDefault(), 2).ToString("F2")</td>
                     <td>@product.Quantity</td>
                     <td><button type="button" class="btn btn-link" @onclick="(() => OnEditProduct(product))">Edit</button></td>
-                    <td><button type="button" class="btn btn-link ml-2" @onclick="(() => OnDeleteProduct(product.ProductId))">Delete</button></td>
+                    <td class="@(isAdmin?"":"d-none")"><button type="button" class="btn btn-link ml-2" @onclick="(() => OnDeleteProduct(product.ProductId))">Delete</button></td>
                 </tr>
             }
         </tbody>
@@ -40,11 +41,18 @@
 @code {
     private IEnumerable<Product>? products;
 
-    protected override void OnInitialized()
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private bool isAdmin = false;
+
+    protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
+        var authState = await authenticationStateTask;
         products = ViewProductsUseCase.Execute();
+        isAdmin = await IsAdminUser(authState);
     }
 
     private void OnAddProduct()
@@ -59,7 +67,11 @@
 
     private void OnDeleteProduct(int productId)
     {
+        if (!isAdmin) return;
+
         DeleteProductUseCase.Execute(productId);
         products = ViewProductsUseCase.Execute();
     }
+
+    private async Task<bool> IsAdminUser(AuthenticationState authState) => (await AuthorizationService.AuthorizeAsync(authState.User, "AdminOnly")).Succeeded;
 }

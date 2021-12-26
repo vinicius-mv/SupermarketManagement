@@ -1,6 +1,7 @@
 ﻿@page "/categories"
 
 @inject NavigationManager NavigationManager
+@inject IAuthorizationService AuthorizationService
 @inject UseCases.IViewCategoriesUseCase ViewCategoriesUseCases
 @inject UseCases.IDeleteCategoryUseCase DeleteCategoryUseCase
 
@@ -17,15 +18,15 @@
             </tr>
         </thead>
         <tbody>
-        @foreach (var category in categories)
-        {
-            <tr>
-                <td>@category.Name</td>
-                <td>@category.Description</td>
-                <td><button type="button" @onclick="@(() => EditCategory(category))" class="btn btn-link">Edit</button></td>
-                <td><button type="button" @onclick="@(() => DeleteCategory(category.CategoryId))" class="btn btn-link">Delete</button></td>
-            </tr>
-        }
+            @foreach (var category in categories)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>@category.Description</td>
+                    <td><button type="button" @onclick="@(() => EditCategory(category))" class="btn btn-link">Edit</button></td>
+                    <td class="@(isAdmin?"":"d-none")"><button type="button" @onclick="@(() => DeleteCategory(category.CategoryId))" class="btn btn-link">Delete</button></td>
+                </tr>
+            }
         </tbody>
     </table>
 }
@@ -34,12 +35,19 @@
 <button type="button" @onclick="AddCategory" class="btn btn-primary">Add Category</button>
 
 @code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
     private IEnumerable<Category> categories;
 
-    protected override void OnInitialized()
+    private bool isAdmin = false;
+
+    protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
-
+        var authState = await authenticationStateTask;
+        isAdmin = await IsAdminUser(authState);
         LoadCategories();
     }
 
@@ -55,8 +63,9 @@
 
     private void DeleteCategory(int categoryId)
     {
-        DeleteCategoryUseCase.DeleteCategory(categoryId);
+        if (!isAdmin) return;
 
+        DeleteCategoryUseCase.DeleteCategory(categoryId);
         LoadCategories();
     }
 
@@ -64,4 +73,6 @@
     {
         this.categories = ViewCategoriesUseCases.Execute()?.ToList();
     }
+
+    private async Task<bool> IsAdminUser(AuthenticationState authState) => (await AuthorizationService.AuthorizeAsync(authState.User, "AdminOnly")).Succeeded;
 }

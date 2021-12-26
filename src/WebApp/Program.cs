@@ -7,9 +7,12 @@ using System.Globalization;
 using UseCases;
 using UseCases.DataStorePluginInterfaces;
 using WebApp.Data;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var connectionString = builder.Configuration.GetConnectionString("AccountContextConnection"); builder.Services.AddDbContext<AccountContext>(options =>
+     options.UseSqlServer(connectionString)); builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+      .AddEntityFrameworkStores<AccountContext>();
 var configuration = builder.Configuration;
 
 // Set Culture Info
@@ -27,6 +30,12 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddDbContext<MarketContext>(options =>
 {
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", p => p.RequireClaim("Position", "Admin"));
+    options.AddPolicy("CashierOnly", p => p.RequireClaim("Position", "Cashier"));
 });
 
 // Dependency Injection for In-Memory Data Store
@@ -72,6 +81,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapRazorPages();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 

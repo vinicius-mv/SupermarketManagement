@@ -1,4 +1,5 @@
 ﻿@page "/editproduct/{productId}"
+@attribute [Authorize(Policy = "AdminOnly")]
 
 @inject NavigationManager NavigationManager
 @inject IEditProductUseCase EditProductUseCase
@@ -47,12 +48,13 @@
 
 @code {
     private Product product;
+
     private IEnumerable<Category> categories;
 
     [Parameter]
     public string ProductId { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
